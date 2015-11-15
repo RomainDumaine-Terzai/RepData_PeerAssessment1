@@ -40,3 +40,18 @@ qplot(sumsteps$steps, geom="histogram",
 mean(sumsteps$steps)
 median(sumsteps$steps)
 ```
+
+##What is the average daily activity pattern?
+
+###1.Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+```{r time plot}
+data.inter <- aggregate(list(steps=data$steps), by=list(interval=data$interval),
+                      FUN="mean")
+plot(data.inter$interval,data.inter$steps, type = "l",
+     xlab="interval", ylab="step")
+```
+
+###2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```{r max}
+data.inter[which.max(data.inter$steps),]
+```
