@@ -10,6 +10,33 @@ opts_chunk$set(echo = TRUE)
 
 ```{r loadata}
 unzip(zipfile="activity.zip")
-data <- read.csv("activity.csv", header = TRUE, sep = ",", 
-                 colClasses = c("numeric", "character","integer")) 
+data_raw <- read.csv("activity.csv", header = TRUE, sep = ",", 
+                 colClasses = c("numeric", "character","integer"),
+                 na.strings = "NA")
+## Removing Na
+data <- na.omit(data_raw)
+```
+
+## What is mean total number of steps taken per day?
+###1.Calculate the total number of steps per day 
+```{r sumsteps}
+sumsteps <- aggregate(list(steps=data$steps), by=list(date=data$date),
+                      FUN="sum")
+```
+
+###2.Histogram of the total number of steps taken each day
+
+```{r qplot histo}
+library(ggplot2)
+qplot(sumsteps$steps, geom="histogram", 
+      binwidth = (max(sumsteps$steps) - min(sumsteps$steps))/30,
+      xlab = "Number of Steps",
+      ylab = "Frequency") 
+```
+
+###3.Mean and median of the total number of steps taken per day
+
+```{r mean and median}
+mean(sumsteps$steps)
+median(sumsteps$steps)
 ```
