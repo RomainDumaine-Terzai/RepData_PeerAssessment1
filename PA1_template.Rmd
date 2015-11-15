@@ -18,32 +18,36 @@ data <- na.omit(data_raw)
 ```
 
 ## What is mean total number of steps taken per day?
-###1.Calculate the total number of steps per day 
+####1.Calculate the total number of steps per day 
 ```{r sumsteps}
 sumsteps <- aggregate(list(steps=data$steps), by=list(date=data$date),
                       FUN="sum")
 ```
 
-###2.Histogram of the total number of steps taken each day
+####2.Histogram of the total number of steps taken each day
 
 ```{r qplot histo}
 library(ggplot2)
 qplot(sumsteps$steps, geom="histogram", 
       binwidth = (max(sumsteps$steps) - min(sumsteps$steps))/30,
       xlab = "Number of Steps",
-      ylab = "Frequency") 
+      ylab = "Steps (Frequency)",
+      main = "Histogram of Steps per day") 
 ```
 
-###3.Mean and median of the total number of steps taken per day
+####3.Mean and median of the total number of steps taken per day
 
 ```{r mean and median}
-mean(sumsteps$steps)
-median(sumsteps$steps)
+mean_na <-mean(sumsteps$steps)
+print(mean_na)
+median_na <-median(sumsteps$steps)
+print(median_na)
 ```
 
 ##What is the average daily activity pattern?
 
-###1.Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+####1.Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
 ```{r time plot}
 data.inter <- aggregate(list(steps=data$steps), by=list(interval=data$interval),
                       FUN="mean")
@@ -51,7 +55,54 @@ plot(data.inter$interval,data.inter$steps, type = "l",
      xlab="interval", ylab="step")
 ```
 
-###2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+####2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
 ```{r max}
 data.inter[which.max(data.inter$steps),]
 ```
+
+##Imputing missing values
+
+####1.Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+```{r sum Na}
+sum(is.na(data_raw$steps))
+
+```
+
+####2.Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+```{r replace Na}
+data_na <- is.na(data_raw$steps)
+data_avg <- tapply(data_raw$steps, data_raw$interval, mean, simplify=TRUE, na.rm=TRUE)
+```
+
+####3.Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```{r new dataser}
+data_new <- data_raw
+data_new$steps[data_na] <- data_avg[as.character(data_raw$interval[data_na])]
+```
+
+####4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r histo comparaison}
+sumsteps_new <- aggregate(list(steps=data_new$steps), by=list(date=data_new$date),
+                      FUN="sum")
+library(ggplot2)
+qplot(sumsteps$steps, geom="histogram", 
+      binwidth = (max(sumsteps$steps) - min(sumsteps$steps))/30,
+      xlab = "Number of Steps with NA filled with mean of Interval",
+      ylab = "Steps (Frequency)",
+      main = "Histogram of Steps per day (NA filled)") 
+mean_new <- mean(sumsteps_new$steps)
+print(mean_new)
+median_new <- median(sumsteps_new$steps)
+print(median_new)
+```
+
+```{r comparaison}
+mean_new - mean_na
+median_new - median_na
+```
+Almost no difference as we used the mean to fill the NA, implying that we add values with no weight
