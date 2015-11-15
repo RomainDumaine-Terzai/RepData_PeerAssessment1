@@ -1,25 +1,15 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
+## Echo Global option TRUE
+```{r setoptions, echo=TRUE}
+library("knitr")
+opts_chunk$set(echo = TRUE)
+```
 
 ## Loading and preprocessing the data
 
-
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+```{r loadata}
+unzip(zipfile="activity.zip")
+data <- read.csv("activity.csv", header = TRUE, sep = ",", 
+                 colClasses = c("numeric", "character","integer")) 
+```
