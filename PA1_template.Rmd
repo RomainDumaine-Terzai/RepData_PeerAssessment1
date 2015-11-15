@@ -2,29 +2,36 @@
 
 ## Echo Global option TRUE
 ```{r setoptions, echo=TRUE}
+## Echo Global option TRUE for all Markdown R
 library("knitr")
 opts_chunk$set(echo = TRUE)
 ```
 
 ## Loading and preprocessing the data
+####1.Load the data (i.e. read.csv())
 
 ```{r loadata}
 unzip(zipfile="activity.zip")
 data_raw <- read.csv("activity.csv", header = TRUE, sep = ",", 
                  colClasses = c("numeric", "character","integer"),
                  na.strings = "NA")
+```
+
+####2.Process/transform the data (if necessary) into a format suitable for your analysis
+
+```{r transform}
 ## Removing Na
 data <- na.omit(data_raw)
 ```
 
 ## What is mean total number of steps taken per day?
-####1.Calculate the total number of steps per day 
+####1.Calculate the total number of steps taken per day
 ```{r sumsteps}
 sumsteps <- aggregate(list(steps=data$steps), by=list(date=data$date),
                       FUN="sum")
 ```
 
-####2.Histogram of the total number of steps taken each day
+####2.If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
 
 ```{r qplot histo}
 library(ggplot2)
@@ -35,7 +42,7 @@ qplot(sumsteps$steps, geom="histogram",
       main = "Histogram of Steps per day") 
 ```
 
-####3.Mean and median of the total number of steps taken per day
+####3.Calculate and report the mean and median of the total number of steps taken per day
 
 ```{r mean and median}
 mean_na <-mean(sumsteps$steps)
@@ -52,7 +59,8 @@ print(median_na)
 data.inter <- aggregate(list(steps=data$steps), by=list(interval=data$interval),
                       FUN="mean")
 plot(data.inter$interval,data.inter$steps, type = "l",
-     xlab="interval", ylab="step")
+     xlab="Interval", ylab="Steps",
+     main = "5-minute interval across all days")
 ```
 
 ####2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
@@ -106,3 +114,6 @@ mean_new - mean_na
 median_new - median_na
 ```
 Almost no difference as we used the mean to fill the NA, implying that we add values with no weight
+
+##Are there differences in activity patterns between weekdays and weekends?
+Not done
